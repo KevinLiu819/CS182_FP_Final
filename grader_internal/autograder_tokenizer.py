@@ -190,42 +190,31 @@ class DictionaryRef:
                 count_dict[(corpus_of_text[i], corpus_of_text[i+1])] = 1
         return max(count_dict, key=count_dict.get)
 
-def tokenize_ref(text : str, dictionary : DictionaryRef) -> typing.List[int]:
-    """
-    This function should tokenize the text using the dictionary and return the tokenized text as a list of integers
-
-    Parameters
-    ----------
-    text : str
-        The text to tokenize
-    
-    dictionary : Dictionary
-        The dictionary to use for tokenization
-    """
-
-    text_bytestream = bytes(text, "utf-8") # convert text to bytestream
+def tokenize_ref(text: str, dictionary) -> typing.List[int]:
+    text_bytestream = bytes(text, "utf-8")
     tokenized_text : typing.List[int] = [] # initialize tokenized text
     for i in range(len(text_bytestream)):
         tokenized_text.append(
             dictionary.dictionary_array.index(text_bytestream[i:i+1])
         )
-    
+
     num_tokenized_last_pass = len(tokenized_text)
-    # We will sweep through the tokenized text and replace any combination of two vocab items with the later vocab item
     while num_tokenized_last_pass > 0:
-        # YOUR CODE HERE
-        # raise NotImplementedError()
-        num_tokenized_last_pass = 0
+        i = 0
         new_tokenized_text = []
-        for i in range(len(tokenized_text) - 1):
-            if (tokenized_text[i], tokenized_text[i+1]) in dictionary.combinations_to_index:
-                new_tokenized_text.append(dictionary.combinations_to_index[(tokenized_text[i], tokenized_text[i+1])])
-                num_tokenized_last_pass += 1
+        while i < len(tokenized_text) - 1:
+            combination = (tokenized_text[i], tokenized_text[i + 1])
+            if combination in dictionary.combinations_to_index:
+                new_tokenized_text.append(dictionary.combinations_to_index[combination])
+                i += 2
             else:
                 new_tokenized_text.append(tokenized_text[i])
-                if i == len(tokenized_text) - 2:
-                    new_tokenized_text.append(tokenized_text[i+1])
-        
+                i += 1
+
+        if i == len(tokenized_text) - 1:
+            new_tokenized_text.append(tokenized_text[-1])
+
         tokenized_text = new_tokenized_text
-    
+        num_tokenized_last_pass = num_tokenized_last_pass - len(tokenized_text)
+
     return tokenized_text
