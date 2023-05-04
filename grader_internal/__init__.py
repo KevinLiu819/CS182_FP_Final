@@ -1,6 +1,7 @@
 import typing
 import numpy as np
 import os
+import math
 
 class Autograder:
     def __init__(self):
@@ -110,4 +111,4 @@ class Autograder:
     # Note: This question is worth 5 points
     def grade_shakespeare(self, submission_dat : typing.Dict[str, np.ndarray]) -> bool:
         submitted_loss = submission_dat["Shakespeare"]
-        return 5. * max(0., min(1., 3. - round(submitted_loss, 2)))
+        return 5. * max(0., min(1., round(3. - submitted_loss, 2)))
